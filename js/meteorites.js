@@ -1,10 +1,10 @@
 var alldata = [],           // loaded data from CSV
     workingdata = [],       // filtered data
+    meteoriteTypes = [],    // filtered type of meteorites
     currentZoom = 1,
     initialYear = 0,
     finalYear = 0,
-    yearX,
-    yearDelay;
+    gAnnotations;
 
 // using d3, we select the html element with "map" id and append an svg tag
 // where d3 will be adding svg items to render the map
@@ -61,7 +61,6 @@ var zoom = d3.behavior.zoom()
         // get wider when zooming in
         g.selectAll("circle")
             .attr('r', 3 / currentZoom)
-
     });
 svg.call(zoom)
 
@@ -99,48 +98,25 @@ function loadData() {
         workingdata = alldata.slice(0);
         initialYear = parseInt(workingdata[0].YEAR);
         finalYear = parseInt(workingdata[workingdata.length - 1].YEAR);
-
-        yearX = d3.scale.linear()
-            .domain([initialYear, finalYear])
-            .range([100, setting.mapWidth])
-
-        yearDelay = d3.scale.linear()
-            .domain([initialYear, finalYear])
-            .range([1000, 1000 + finalYear])
-
         displayData();
     });
 }
 
 // display the meteorites
 function displayData() {
-
-    // data label
-    var gDataInfo = g.append('g')
-        .attr('id', 'dataInfo')
-    /*
-     var rDataInfo = g.append('rect')
-     .attr('x', 10)
-     .attr('y', 280)
-     .attr('width', 250)
-     .attr('height', 300)
-     .style('fill', 'rgba(255,255,255,0.5)')
-     .style('stroke', 'rgba(125,125,125,0.5)')
-     */
-
-    var textInfo = gDataInfo.append('text')
+    // Year data label
+    var yearInfo = g.append('text')
         .text('')
-        .attr('x', 20)
-        .attr('y', 300)
-        .attr('font-family', 'sans-serif')
-        .attr('font-size', '100px')
-        .attr('font-weight', 'bold')
-        .attr('fill', 'rgba(0,0,0,0.5')
-
+        .attr({
+            x: 20, y: 450,
+            'font-family': 'sans-serif', 'font-size': '50px',
+            'font-weight': 'bold', 'fill': 'rgba(0,0,0,0.5'
+        })
 
     // Create a group for the Meteorite elements:
     gDataPoints = g.append('g')
         .attr('id', 'datapoints')
+
 
     // add a white filled circle for each meteorite
     gDataPoints.selectAll('circle')
@@ -160,15 +136,11 @@ function displayData() {
         .attr('r', 0 / currentZoom)     // we start with a nil radius
         .transition()                   // and will animate...
         .delay(function (d, i) {        // delay each meteorite based on its row number
-            //return i * 50;
-
-            return yearDelay(i);
+            return i * 10;
         })
         .attr('r', 3 / currentZoom)     // after the delay, increase the radius.
-        .each('end', function (d, i) {
-            textInfo.text(d.YEAR);
-            textInfo.attr('x', yearX(i));
-            //textInfo.attr('x', yearX(d.YEAR));
+        .each('end', function (d) {	// and display the year text
+            yearInfo.text('Year: ' + d.YEAR);
         })
 }
 
