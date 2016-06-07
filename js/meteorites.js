@@ -3,16 +3,15 @@ var alldata = [],           // loaded data from CSV
     meteoriteTypes = [],    // filtered type of meteorites
     currentZoom = 1,
     initialYear = 0,
-    finalYear = 0,
-    gAnnotations;
+    finalYear = 0;
 
 // using d3, we select the html element with "map" id and append an svg tag
 // where d3 will be adding svg items to render the map
 var svg = d3.select('#map')
     .append('svg')
     .attr('id', 'svg')
-    .attr('width', setting.svgWidth)
-    .attr('height', setting.svgHeight)
+    .style('width', setting.svgWidth)
+    .style('height', setting.svgHeight)
 
 // get the width from the screen (so remove the 'px' at the end)
 setting.mapWidth = svg.style("width").replace('px', '');
@@ -98,6 +97,8 @@ function loadData() {
         workingdata = alldata.slice(0);
         initialYear = parseInt(workingdata[0].YEAR);
         finalYear = parseInt(workingdata[workingdata.length - 1].YEAR);
+
+        hideLoading();
         displayData();
     });
 }
@@ -161,4 +162,10 @@ function compareYear(a, b) {
         return 1;
     else
         return 0;
+}
+
+function hideLoading() {
+    $(".loading").hide();
+    $("body").css({"background-color": "#c2dfff"});
+    $(".map").show();
 }
